@@ -33,5 +33,6 @@ public:
   bool operator==(const bitstring& bs);
   bool operator<(const bitstring& bs);
 
-
+  void LeftShift();
+  void ReadBit(char c);
 };

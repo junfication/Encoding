@@ -12,6 +12,7 @@ void bitstring::GenerateString()
 
 void bitstring::GenerateValue()
 {
+  value = 0;
   unsigned int bit = 0x1;
   auto start = --end();
   for (; start != begin(); --start)
@@ -91,4 +92,25 @@ bool bitstring::operator==(const bitstring& bs)
 bool bitstring::operator<(const bitstring& bs)
 {
   return size() < bs.size();
+}
+
+void bitstring::LeftShift()
+{
+  auto start = begin();
+  for (++start; start != end(); ++start)
+  {
+    auto prev = start;
+    --prev;
+    *prev = *start;
+  }
+  --start;
+  *start = false;
+  Generate();
+}
+
+void bitstring::ReadBit(char c)
+{
+  if (c == '1') back() = true;
+  else back() = false;
+  Generate();
 }

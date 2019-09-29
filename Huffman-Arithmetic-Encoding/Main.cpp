@@ -7,6 +7,9 @@ int main()
 {
   // Reading of input here
   std::cout << "Hello World!\n";
-  HuffmanEncoding("huffmanInput.txt");
-  HuffmanDecoding("test.huf");
+  // HuffmanEncoding("huffmanInput.txt");
+  // HuffmanDecoding("test.huf");
+  ArithmeticEncoding("tetr");
+  ArithmeticDecoding("asda");
+
 }

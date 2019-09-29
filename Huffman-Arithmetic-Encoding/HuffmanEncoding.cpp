@@ -70,7 +70,7 @@ void HuffmanEncoding(const std::string& fn)
   bitstring eofBits;
 
   auto start = table.begin();
-  unsigned sz = start->second.size();
+  size_t sz = start->second.size();
   unsigned int val = 0x0;
   start->second.ChangeValue(val);
   canonicalTable[start->first] = start->second;
@@ -80,14 +80,14 @@ void HuffmanEncoding(const std::string& fn)
   header.push_back((unsigned char)table.size());
   header.push_back(start->first);
   header.push_back((char)start->second.size());
-  unsigned int oldSz = sz;
+  size_t oldSz = sz;
   unsigned int eofSz = 0;
 
   for (++start; start != table.end(); ++start)
   {
     oldSz = sz;
     val += 0x1;
-    unsigned int diff = start->second.size() - sz;
+    size_t diff = start->second.size() - sz;
     while (diff)
     {
       sz = start->second.size();
@@ -128,7 +128,8 @@ void HuffmanEncoding(const std::string& fn)
   for (auto o : header) std::cout << (int)((unsigned char)o) << " ";
   std::cout << std::endl;
   // End of Debugging
-    // Debugging compressed chars
+  
+  // Debugging compressed chars
   for (auto o : output) std::cout << (int)((unsigned char)o) << " ";
   std::cout << std::endl;
   // End of Debugging
@@ -138,8 +139,6 @@ void HuffmanEncoding(const std::string& fn)
   std::ofstream file("test.huf", std::ios::binary);
   file << output;
   file.close();
-
-
 }
 
 void HuffmanDecoding(const std::string& fn)
