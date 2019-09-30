@@ -76,8 +76,13 @@ void HuffmanEncoding(const std::string& fn)
   canonicalTable[start->first] = start->second;
   if (start->second.eof) eofBits = start->second;
   std::string header;
+
   // push header size
-  header.push_back((unsigned char)table.size());
+  short headerSz = table.size();
+  char* headPtr = (char*)((void*)&headerSz);
+  header.push_back(*headPtr);
+  header.push_back(*(headPtr + 1));
+
   header.push_back(start->first);
   header.push_back((char)start->second.size());
   size_t oldSz = sz;
@@ -99,6 +104,7 @@ void HuffmanEncoding(const std::string& fn)
     if (start->second.eof)
       eofBits = start->second;
     header.push_back(start->first);
+    if (start->second.eof) header.push_back((unsigned char)255);
     header.push_back((char)(start->second.size() - oldSz));
   }
 
@@ -151,9 +157,14 @@ void HuffmanDecoding(const std::string& fn)
   }
   std::string inputData(std::istreambuf_iterator<char>(input), {});
   // std::cout << std::endl;
-  size_t pos = (size_t)(((unsigned char)inputData[0]) * 2);
-  std::string header = inputData.substr(1, pos);
-  std::string encodedData = inputData.substr(pos + 1);
+
+  char* head = const_cast<char*>(inputData.c_str());
+  short* headPtr = (short*)((void*)head);
+
+  size_t pos = (size_t)(*headPtr);
+  pos += (pos + 1);
+  std::string header = inputData.substr(2, pos);
+  std::string encodedData = inputData.substr(pos + 2);
 
   // Debug header and encoded Data
   // for (auto& c : header) std::cout << (int)((unsigned char)c) << " ";
@@ -178,9 +189,14 @@ void HuffmanDecoding(const std::string& fn)
 
     for (i += 2; i < header.size(); i += 2)
     {
-      val += 0x1;
-      unsigned int symbolSize = (unsigned int)((unsigned char)header[i + 1]);
       bitstring bs;
+      unsigned int symbolSize = (unsigned int)((unsigned char)header[i + 1]);
+      val += 0x1;
+      if (header[i] == 0 && symbolSize == 255)
+      {
+        symbolSize = (unsigned int)((unsigned char)header[i + 2]);
+        bs.eof = true;
+      }
       while (symbolSize != 0)
       {
         val = val << 1;
@@ -190,9 +206,9 @@ void HuffmanDecoding(const std::string& fn)
       for (unsigned int j = 0; j < size; ++j)
         bs.push_back(false);
       bs.ChangeValue(val);
-      if (header[i] == 0) bs.eof = true;
-      canonicalTable[bs] = header[i];
       
+      canonicalTable[bs] = header[i];
+      if (bs.eof) ++i;
     }
   }
   // std::cout << "Table : " << std::endl;
