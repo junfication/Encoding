@@ -6,10 +6,10 @@
 int main()
 {
   // Reading of input here
-  std::cout << "Hello World!\n";
-  // HuffmanEncoding("huffmanInput.txt");
-  // HuffmanDecoding("test.huf");
-  ArithmeticEncoding("tetr");
-  ArithmeticDecoding("asda");
+  // std::cout << "Hello World!\n";
+  HuffmanEncoding("pg2701.txt");
+  HuffmanDecoding("HuffmanEncoded.huf");
+  ArithmeticEncoding("pg2701.txt");
+  ArithmeticDecoding("ArithmeticEncoded.ari");
 
 }

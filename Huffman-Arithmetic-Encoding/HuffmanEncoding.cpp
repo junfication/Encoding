@@ -103,13 +103,13 @@ void HuffmanEncoding(const std::string& fn)
   }
 
   // Debugging
-  std::cout << "Table : " << std::endl;
-  for (auto& t : table)
-  {
-    if(!t.second.eof)
-      std::cout << t.first <<" " << t.second.Value() << " " << t.second.String() << std::endl;
-    else std::cout << "EOF" << " " << t.second.Value() << " " << t.second.String() << std::endl;
-  }
+  // std::cout << "Table : " << std::endl;
+  // for (auto& t : table)
+  // {
+  //   if(!t.second.eof)
+  //     std::cout << t.first <<" " << t.second.Value() << " " << t.second.String() << std::endl;
+  //   else std::cout << "EOF" << " " << t.second.Value() << " " << t.second.String() << std::endl;
+  // }
   // End of Debugging
 
   // Huffman Compression
@@ -120,23 +120,23 @@ void HuffmanEncoding(const std::string& fn)
   data.Generate();
 
   // Debugging of the bitstring output
-  std::cout << data.String() << std::endl;
+  // std::cout << data.String() << std::endl;
   // End of Debugging
   std::string output = data.Output();
 
   // Debugging compressed chars
-  for (auto o : header) std::cout << (int)((unsigned char)o) << " ";
-  std::cout << std::endl;
+  // for (auto o : header) std::cout << (int)((unsigned char)o) << " ";
+  // std::cout << std::endl;
   // End of Debugging
   
   // Debugging compressed chars
-  for (auto o : output) std::cout << (int)((unsigned char)o) << " ";
-  std::cout << std::endl;
+  // for (auto o : output) std::cout << (int)((unsigned char)o) << " ";
+  // std::cout << std::endl;
   // End of Debugging
 
   output = header + output;
 
-  std::ofstream file("test.huf", std::ios::binary);
+  std::ofstream file("HuffmanEncoded.huf", std::ios::binary);
   file << output;
   file.close();
 }
@@ -150,16 +150,16 @@ void HuffmanDecoding(const std::string& fn)
     return;
   }
   std::string inputData(std::istreambuf_iterator<char>(input), {});
-  std::cout << std::endl;
+  // std::cout << std::endl;
   size_t pos = (size_t)(((unsigned char)inputData[0]) * 2);
   std::string header = inputData.substr(1, pos);
   std::string encodedData = inputData.substr(pos + 1);
 
   // Debug header and encoded Data
-  for (auto& c : header) std::cout << (int)((unsigned char)c) << " ";
-  std::cout << std::endl;
-  for (auto& c : encodedData) std::cout << (int)((unsigned char)c) << " ";
-  std::cout << std::endl;
+  // for (auto& c : header) std::cout << (int)((unsigned char)c) << " ";
+  // std::cout << std::endl;
+  // for (auto& c : encodedData) std::cout << (int)((unsigned char)c) << " ";
+  // std::cout << std::endl;
   // end of debug
   
   // construct canonical table
@@ -195,13 +195,13 @@ void HuffmanDecoding(const std::string& fn)
       
     }
   }
-  std::cout << "Table : " << std::endl;
-  for (auto& t : canonicalTable)
-  {
-    if (!t.first.eof)
-      std::cout << t.second << " " << t.first.Value() << " " << t.first.String() << std::endl;
-    else std::cout << "EOF" << " " << t.first.Value() << " " << t.first.String() << std::endl;
-  }
+  // std::cout << "Table : " << std::endl;
+  // for (auto& t : canonicalTable)
+  // {
+  //   if (!t.first.eof)
+  //     std::cout << t.second << " " << t.first.Value() << " " << t.first.String() << std::endl;
+  //   else std::cout << "EOF" << " " << t.first.Value() << " " << t.first.String() << std::endl;
+  // }
   
   bitstring data;
   for (size_t i = 0; i < encodedData.size(); ++i)
@@ -213,7 +213,7 @@ void HuffmanDecoding(const std::string& fn)
     data += tmp;
   }
   data.Generate();
-  std::cout << data.String() << std::endl;
+  // std::cout << data.String() << std::endl;
     
   std::string decoded;
   bitstring code;
@@ -228,7 +228,7 @@ void HuffmanDecoding(const std::string& fn)
       code.clear();
     }
   }
-  std::ofstream file("huffmanDecoded.txt", std::ios::binary);
+  std::ofstream file("HuffmanDecoded.txt", std::ios::binary);
   file << decoded;
   file.close();
 }

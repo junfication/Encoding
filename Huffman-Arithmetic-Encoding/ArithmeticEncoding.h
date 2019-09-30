@@ -1,21 +1,12 @@
 #pragma once
 #include <string>
 #include <iostream>
-#include <limits>
-#include <tuple>
-#include <vector>
-#include <map>
+#include <fstream>
 #include "bitstring.h"
 
-#define probability 1.0/255.0
+#define USE_ENG_PROBS 1
 
-std::tuple<unsigned long long, unsigned long long, unsigned long long> 
-GetProbability(const unsigned char& c, std::vector<unsigned long long>& cumulative_frequency);
+void OutputBitPlusPending(bool bit, int& pendingBits, bitstring& bs, bool DEBUG);
 
-void Update(const unsigned char& c, std::vector<unsigned long long>& cumulative_frequency);
-
-void OutputBitPlusPending(bool bit, int& pendingBits);
-
-unsigned char GetSymbol(double long d);
 void ArithmeticEncoding(std::string fn);
 void ArithmeticDecoding(std::string fn);
