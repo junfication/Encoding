@@ -21,5 +21,7 @@ private:
   void TableHelper(Node* n, bitstring bs, std::vector<std::pair<char, bitstring>>& t);
 };
 
-void HuffmanEncoding(const std::string& fn);
-void HuffmanDecoding(const std::string& fn);
+void HuffmanEncoding(const std::string& fn, const std::string& outFile);
+std::string HuffmanEncoderHelper(std::string inputData);
+void HuffmanDecoding(const std::string& fn, const std::string& outFile);
+std::string HuffmanDecoderHelper(std::string inputData);

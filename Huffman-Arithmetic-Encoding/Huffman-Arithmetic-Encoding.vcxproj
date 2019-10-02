@@ -151,15 +151,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Args.cpp" />
     <ClCompile Include="ArithmeticEncoding.cpp" />
     <ClCompile Include="bitstring.cpp" />
     <ClCompile Include="HuffmanEncoding.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Connection.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Args.h" />
     <ClInclude Include="ArithmeticEncoding.h" />
     <ClInclude Include="bitstring.h" />
     <ClInclude Include="HuffmanEncoding.h" />
+    <ClInclude Include="Connection.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

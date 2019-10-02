@@ -8,5 +8,7 @@
 
 void OutputBitPlusPending(bool bit, int& pendingBits, bitstring& bs, bool DEBUG);
 
-void ArithmeticEncoding(std::string fn);
-void ArithmeticDecoding(std::string fn);
+void ArithmeticEncoding(const std::string& fn, const std::string& outFile);
+std::string ArithmeticEncodingHelper(std::string inputData);
+void ArithmeticDecoding(const std::string& fn, const std::string& outFile);
+std::string ArithmeticDecodingHelper(std::string inputData);

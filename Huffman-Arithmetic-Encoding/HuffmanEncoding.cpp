@@ -1,6 +1,6 @@
 #include "HuffmanEncoding.h"
 
-void HuffmanEncoding(const std::string& fn)
+void HuffmanEncoding(const std::string& fn, const std::string& outFile)
 {
   // tmp text for debugging purposes;
   std::ifstream input(fn, std::ios::binary);
@@ -9,8 +9,18 @@ void HuffmanEncoding(const std::string& fn)
     std::cout << "No file is opened" << std::endl;
     return;
   }
+
   std::string inputData(std::istreambuf_iterator<char>(input), {});
 
+  std::string output = HuffmanEncoderHelper(inputData);
+
+  std::ofstream file(outFile, std::ios::binary);
+  file << output;
+  file.close();
+}
+
+std::string HuffmanEncoderHelper(std::string inputData)
+{
   auto then = std::chrono::system_clock::now();
 
   // Generate histogram
@@ -134,20 +144,17 @@ void HuffmanEncoding(const std::string& fn)
   // for (auto o : header) std::cout << (int)((unsigned char)o) << " ";
   // std::cout << std::endl;
   // End of Debugging
-  
+
   // Debugging compressed chars
   // for (auto o : output) std::cout << (int)((unsigned char)o) << " ";
   // std::cout << std::endl;
   // End of Debugging
 
   output = header + output;
-
-  std::ofstream file("HuffmanEncoded.huf", std::ios::binary);
-  file << output;
-  file.close();
+  return output;
 }
 
-void HuffmanDecoding(const std::string& fn)
+void HuffmanDecoding(const std::string& fn, const std::string& outFile)
 {
   std::ifstream input(fn, std::ios::binary);
   if (!input.is_open())
@@ -158,6 +165,15 @@ void HuffmanDecoding(const std::string& fn)
   std::string inputData(std::istreambuf_iterator<char>(input), {});
   // std::cout << std::endl;
 
+  std::string decoded = HuffmanDecoderHelper(inputData);
+
+  std::ofstream file(outFile, std::ios::binary);
+  file << decoded;
+  file.close();
+}
+
+std::string HuffmanDecoderHelper(std::string inputData)
+{
   char* head = const_cast<char*>(inputData.c_str());
   short* headPtr = (short*)((void*)head);
 
@@ -172,7 +188,7 @@ void HuffmanDecoding(const std::string& fn)
   // for (auto& c : encodedData) std::cout << (int)((unsigned char)c) << " ";
   // std::cout << std::endl;
   // end of debug
-  
+
   // construct canonical table
   std::map<bitstring, char> canonicalTable;
   if (header.size() >= 2)
@@ -206,7 +222,7 @@ void HuffmanDecoding(const std::string& fn)
       for (unsigned int j = 0; j < size; ++j)
         bs.push_back(false);
       bs.ChangeValue(val);
-      
+
       canonicalTable[bs] = header[i];
       if (bs.eof) ++i;
     }
@@ -218,7 +234,7 @@ void HuffmanDecoding(const std::string& fn)
   //     std::cout << t.second << " " << t.first.Value() << " " << t.first.String() << std::endl;
   //   else std::cout << "EOF" << " " << t.first.Value() << " " << t.first.String() << std::endl;
   // }
-  
+
   bitstring data;
   for (size_t i = 0; i < encodedData.size(); ++i)
   {
@@ -230,7 +246,7 @@ void HuffmanDecoding(const std::string& fn)
   }
   data.Generate();
   // std::cout << data.String() << std::endl;
-    
+
   std::string decoded;
   bitstring code;
   for (unsigned int i = 0; i < data.size(); ++i)
@@ -244,9 +260,8 @@ void HuffmanDecoding(const std::string& fn)
       code.clear();
     }
   }
-  std::ofstream file("HuffmanDecoded.txt", std::ios::binary);
-  file << decoded;
-  file.close();
+
+  return decoded;
 }
 
 void Node::clear()

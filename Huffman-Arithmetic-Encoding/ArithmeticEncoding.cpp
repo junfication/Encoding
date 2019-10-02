@@ -12,7 +12,25 @@ void OutputBitPlusPending(bool bit, int& pendingBits, bitstring& bs, bool DEBUG 
   }
 }
 
-void ArithmeticEncoding(std::string fn)
+void ArithmeticEncoding(const std::string& fn, const std::string& outFile)
+{
+  std::ifstream input(fn, std::ios::binary);
+  if (!input.is_open())
+  {
+    std::cout << "No file is opened" << std::endl;
+    return;
+  }
+  std::string inputData(std::istreambuf_iterator<char>(input), {});
+
+  std::string output = ArithmeticEncodingHelper(inputData);
+
+  // output to file here
+  std::ofstream file(outFile, std::ios::binary);
+  file << output;
+  file.close();
+}
+
+std::string ArithmeticEncodingHelper(std::string inputData)
 {
 #if USE_ENG_PROBS
   //this table is based on the frequency of letters in english text
@@ -20,7 +38,7 @@ void ArithmeticEncoding(std::string fn)
   const unsigned short probabilitiesHigh[257] =
   {
     2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120, 122, 124, 126, 128, 130, 278, 305, 354, 432, 651, 693, 729, 836, 969, 970, 982, 1054, 1101, 1227, 1367, 1400, 1402, 1511, 1625, 1790, 1842, 1862, 1900, 1903, 1941, 1942, 1944, 1946, 1948, 1950, 1952, 1954, 2103, 2131, 2181, 2260, 2480, 2523, 2560, 2668, 2802, 2804, 2817, 2890, 2938, 3065, 3206, 3240, 3243, 3353, 3468, 3634, 3687, 3708, 3747, 3751, 3790, 3792, 3794, 3796, 3798, 3800, 3802, 3804, 3806, 3808, 3810, 3812, 3814, 3816, 3818, 3820, 3822, 3824, 3826, 3828, 3830, 3832, 3834, 3836, 3838, 3840, 3842, 3844, 3846, 3848, 3850, 3852, 3854, 3856, 3858, 3860, 3862, 3864, 3866, 3868, 3870, 3872, 3874, 3876, 3878, 3880, 3882, 3884, 3886, 3888, 3890, 3892, 3894, 3896, 3898, 3900, 3902, 3904, 3906, 3908, 3910, 3912, 3914, 3916, 3918, 3920, 3922, 3924, 3926, 3928, 3930, 3932, 3934, 3936, 3938, 3940, 3942, 3944, 3946, 3948, 3950, 3952, 3954, 3956, 3958, 3960, 3962, 3964, 3966, 3968, 3970, 3972, 3974, 3976, 3978, 3980, 3982, 3984, 3986, 3988, 3990, 3992, 3994, 3996, 3998, 4000, 4002, 4004, 4006, 4008, 4010, 4012, 4014, 4016, 4018, 4020, 4022, 4024, 4026, 4028, 4030, 4032, 4034, 4036, 4038, 4040, 4042, 4044, 4046, 4048, 4050, 4052, 4054, 4056, 4058, 4059
-  };
+};
 
   const unsigned short probabilitiesLow[257] =
   {
@@ -40,14 +58,6 @@ void ArithmeticEncoding(std::string fn)
   };
 #endif
 
-  std::ifstream input(fn, std::ios::binary);
-  if (!input.is_open())
-  {
-    std::cout << "No file is opened" << std::endl;
-    return;
-  }
-  std::string inputData(std::istreambuf_iterator<char>(input), {});
-
   unsigned short int low = 0;
   unsigned short int high = 0xffff;
   int pendingBits = 0;
@@ -57,14 +67,14 @@ void ArithmeticEncoding(std::string fn)
   {
     unsigned short int lowCount;
     unsigned short int highCount;
-    unsigned short int scale = probabilitiesHigh[256]; 
+    unsigned short int scale = probabilitiesHigh[256];
 
     lowCount = probabilitiesLow[c];
     highCount = probabilitiesHigh[c];
 
     long range = (long)(high - low) + 1;
     high = low + (unsigned short int)((range * highCount) / scale - 1);
-    low =  low + (unsigned short int)((range * lowCount) / scale);
+    low = low + (unsigned short int)((range * lowCount) / scale);
 
     while (true)
     {
@@ -72,7 +82,7 @@ void ArithmeticEncoding(std::string fn)
       {
         OutputBitPlusPending(0, pendingBits, bs);
       }
-      else if(low >= 0x8000)
+      else if (low >= 0x8000)
       {
         OutputBitPlusPending(1, pendingBits, bs);
       }
@@ -137,7 +147,7 @@ void ArithmeticEncoding(std::string fn)
   auto output = bs.Output();
 
   if (output.size() != 0 && (output.size() % 2 == 1)) output.push_back(0);
- 
+
   // generate header
 
   std::string header;
@@ -155,14 +165,10 @@ void ArithmeticEncoding(std::string fn)
   // end of generate header
 
   output = header + output;
-
-  // output to file here
-  std::ofstream file("ArithmeticEncoded.ari", std::ios::binary);
-  file << output;
-  file.close();
+  return output;
 }
 
-void ArithmeticDecoding(std::string fn)
+void ArithmeticDecoding(const std::string& fn, const std::string& outFile)
 {
   std::ifstream input(fn, std::ios::binary);
   if (!input.is_open())
@@ -172,6 +178,16 @@ void ArithmeticDecoding(std::string fn)
   }
   std::string inputData(std::istreambuf_iterator<char>(input), {});
 
+  std::string output = ArithmeticDecodingHelper(inputData);
+
+  // output to file
+  std::ofstream file(outFile, std::ios::binary);
+  file << output;
+  file.close();
+}
+
+std::string ArithmeticDecodingHelper(std::string inputData)
+{
   unsigned short probabilitiesHighD[257];
   unsigned short probabilitiesLowD[257];
 
@@ -185,8 +201,8 @@ void ArithmeticDecoding(std::string fn)
   unsigned short int codeVal = 0;
   std::string output;
 
-  if (!inputData.size()) return;
-  
+  if (!inputData.size()) return std::string();
+
   // decode header
   std::string header = inputData.substr(0, 514);
   inputData = inputData.substr(514);
@@ -198,7 +214,7 @@ void ArithmeticDecoding(std::string fn)
     char* headerPtr = const_cast<char*>(&header[i]);
     unsigned short* codedProb = (unsigned short*)((char*)headerPtr);
     probabilitiesHighD[probCounter++] = *codedProb;
-    if(probCounter < 257) probabilitiesLowD[probCounter] = *codedProb;
+    if (probCounter < 257) probabilitiesLowD[probCounter] = *codedProb;
   }
   // end of decoding of header
 
@@ -262,14 +278,10 @@ void ArithmeticDecoding(std::string fn)
       high <<= 1;
       high |= 1;
       codeVal <<= 1;
-      if(counter < data.size() && data[counter]) codeVal += 0x1;
+      if (counter < data.size() && data[counter]) codeVal += 0x1;
       counter++;
     }
     output.push_back(c);
   }
-
-  // output to file
-  std::ofstream file("ArithmeticDecoded.txt", std::ios::binary);
-  file << output;
-  file.close();
+  return output;
 }
