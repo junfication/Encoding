@@ -2,7 +2,6 @@
 
 void HuffmanEncoding(const std::string& fn, const std::string& outFile)
 {
-  // tmp text for debugging purposes;
   std::ifstream input(fn, std::ios::binary);
   if (!input.is_open())
   {
@@ -17,6 +16,7 @@ void HuffmanEncoding(const std::string& fn, const std::string& outFile)
   std::ofstream file(outFile, std::ios::binary);
   file << output;
   file.close();
+  input.close();
 }
 
 std::string HuffmanEncoderHelper(std::string inputData)
@@ -61,10 +61,6 @@ std::string HuffmanEncoderHelper(std::string inputData)
     tree.push(merge);
   }
 
-  auto now = std::chrono::system_clock::now();
-  std::chrono::duration<double> duration = now - then;
-  std::cout << "Time Taken : " << duration.count() * 1000.0 << " milliseconds" << std::endl;
-
   Node* top = tree.top();
   tree.pop();
 
@@ -83,7 +79,8 @@ std::string HuffmanEncoderHelper(std::string inputData)
   size_t sz = start->second.size();
   unsigned int val = 0x0;
   start->second.ChangeValue(val);
-  canonicalTable[start->first] = start->second;
+  if (!start->second.eof)
+    canonicalTable[start->first] = start->second;
   if (start->second.eof) eofBits = start->second;
   std::string header;
 
@@ -110,7 +107,8 @@ std::string HuffmanEncoderHelper(std::string inputData)
       --diff;
     }
     start->second.ChangeValue(val);
-    canonicalTable[start->first] = start->second;
+    if(!start->second.eof)
+      canonicalTable[start->first] = start->second;
     if (start->second.eof)
       eofBits = start->second;
     header.push_back(start->first);
@@ -150,6 +148,15 @@ std::string HuffmanEncoderHelper(std::string inputData)
   // std::cout << std::endl;
   // End of Debugging
 
+  auto now = std::chrono::system_clock::now();
+  std::chrono::duration<double> duration = now - then;
+  std::cout << "Encoding Time Taken : " << duration.count() * 1000.0 << " milliseconds" << std::endl;
+
+  long double uncompressedSz = inputData.size();
+  long double compressedSz = output.size();
+
+  std::cout << "Compression rate : " << uncompressedSz / compressedSz << std::endl;
+
   output = header + output;
   return output;
 }
@@ -170,10 +177,13 @@ void HuffmanDecoding(const std::string& fn, const std::string& outFile)
   std::ofstream file(outFile, std::ios::binary);
   file << decoded;
   file.close();
+  input.close();
 }
 
 std::string HuffmanDecoderHelper(std::string inputData)
 {
+  auto then = std::chrono::system_clock::now();
+
   char* head = const_cast<char*>(inputData.c_str());
   short* headPtr = (short*)((void*)head);
 
@@ -260,6 +270,10 @@ std::string HuffmanDecoderHelper(std::string inputData)
       code.clear();
     }
   }
+
+  auto now = std::chrono::system_clock::now();
+  std::chrono::duration<double> duration = now - then;
+  std::cout << "Decoding Time Taken : " << duration.count() * 1000.0 << " milliseconds" << std::endl;
 
   return decoded;
 }

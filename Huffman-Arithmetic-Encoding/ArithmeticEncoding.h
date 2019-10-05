@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <chrono>
 #include "bitstring.h"
 
 #define USE_ENG_PROBS 1
